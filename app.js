@@ -4,6 +4,7 @@ const createError = require("http-errors");
 const dotenv = require("dotenv");
 dotenv.config();
 
+const { verifyAccessToken } = require("./lib/jwt");
 const AuthRoute = require("./Routes/Auth.route");
 require("./lib/initMongo");
 
@@ -12,7 +13,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", async (req, res, next) => {
+app.get("/", verifyAccessToken, async (req, res, next) => {
+  console.log(req.payload);
+
   res.send("Hello from Express");
 });
 
