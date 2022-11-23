@@ -3,14 +3,13 @@ const createHttpError = require("http-errors");
 const router = express.Router();
 const User = require("../Models/User.model");
 const authSchema = require("../lib/validationSchema");
-const { signAccessToken } = require("../lib/jwt");
+const { signAccessToken, signRefreshToken } = require("../lib/jwt");
 
 // Routes
-
-// auth/register
-// auth/login
-// auth/logout
-// auth/refresh
+// /auth/register
+// /auth/login
+// /auth/logout
+// /auth/refresh
 
 router.post("/register", async (req, res, next) => {
   try {
@@ -23,8 +22,9 @@ router.post("/register", async (req, res, next) => {
     const savedUser = await user.save();
 
     const accessToken = await signAccessToken(savedUser.id);
+    const refreshToken = await signRefreshToken(savedUser.id);
 
-    res.send({ accessToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
 
@@ -43,8 +43,9 @@ router.post("/login", async (req, res, next) => {
     if (!isMatchPassword) throw createHttpError.Unauthorized("Invalid Username/Password");
 
     const accessToken = await signAccessToken(user.id);
+    const refreshToken = await signRefreshToken(user.id);
 
-    res.send({ accessToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isJoi === true) return next(createHttpError.BadRequest("Invalid Username/Password"));
 
