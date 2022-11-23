@@ -33,7 +33,23 @@ router.post("/register", async (req, res, next) => {
 });
 
 router.post("/login", async (req, res, next) => {
-  res.send("login route");
+  try {
+    const { email, password } = await authSchema.validateAsync(req.body);
+
+    const user = await User.findOne({ email });
+    if (!user) throw createHttpError.NotFound("User not registered");
+
+    const isMatchPassword = await user.isValidPassword(password);
+    if (!isMatchPassword) throw createHttpError.Unauthorized("Invalid Username/Password");
+
+    const accessToken = await signAccessToken(user.id);
+
+    res.send({ accessToken });
+  } catch (error) {
+    if (error.isJoi === true) return next(createHttpError.BadRequest("Invalid Username/Password"));
+
+    next(error);
+  }
 });
 
 router.post("/refresh", async (req, res, next) => {
