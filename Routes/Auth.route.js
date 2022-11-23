@@ -2,6 +2,7 @@ const express = require("express");
 const createHttpError = require("http-errors");
 const router = express.Router();
 const User = require("../Models/User.model");
+const authSchema = require("../lib/validationSchema");
 
 // Routes
 
@@ -12,12 +13,9 @@ const User = require("../Models/User.model");
 
 router.post("/register", async (req, res, next) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password } = await authSchema.validateAsync(req.body);
 
-    if (!email || !password) throw createHttpError.BadRequest();
-
-    const userExists = await User.findOne({ email: email });
-
+    const userExists = await User.findOne({ email });
     if (userExists) throw createHttpError.Conflict(`${email} has already been registered`);
 
     const user = new User({ email, password });
@@ -25,6 +23,8 @@ router.post("/register", async (req, res, next) => {
 
     res.send(savedUser);
   } catch (error) {
+    if (error.isJoi === true) error.status = 422;
+
     next(error);
   }
 });
