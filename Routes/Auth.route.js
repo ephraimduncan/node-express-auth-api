@@ -1,5 +1,7 @@
 const express = require("express");
+const createHttpError = require("http-errors");
 const router = express.Router();
+const User = require("../Models/User.model");
 
 // Routes
 
@@ -9,7 +11,22 @@ const router = express.Router();
 // auth/refresh
 
 router.post("/register", async (req, res, next) => {
-  res.send("register route");
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || !password) throw createHttpError.BadRequest();
+
+    const userExists = await User.findOne({ email: email });
+
+    if (userExists) throw createHttpError.Conflict(`${email} has already been registered`);
+
+    const user = new User({ email, password });
+    const savedUser = await user.save();
+
+    res.send(savedUser);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post("/login", async (req, res, next) => {
