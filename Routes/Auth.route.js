@@ -9,6 +9,7 @@ const {
   verifyAccessToken,
   verifyRefreshToken,
 } = require("../lib/jwt");
+const redisClient = require("../lib/redisClient");
 
 // Routes
 // /auth/register
@@ -75,7 +76,26 @@ router.post("/refresh", async (req, res, next) => {
 });
 
 router.delete("/logout", async (req, res, next) => {
-  res.send("logout route");
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw createHttpError.BadRequest();
+
+    const userId = await verifyRefreshToken(refreshToken);
+
+    try {
+      const deletedClient = await redisClient.del(userId);
+
+      console.log(deletedClient);
+
+      res.sendStatus(204);
+    } catch (error) {
+      console.log(error.message);
+
+      throw createHttpError.InternalServerError();
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
