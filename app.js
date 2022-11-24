@@ -8,7 +8,7 @@ const { verifyAccessToken } = require("./lib/jwt");
 const AuthRoute = require("./Routes/Auth.route");
 const redisClient = require("./lib/redisClient");
 
-require("./lib/initMongo");
+require("./lib/mongoClient");
 redisClient.connect();
 
 const app = express();
