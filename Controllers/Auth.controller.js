@@ -1,5 +1,5 @@
 const createHttpError = require("http-errors");
-const User = require("../Models/User.model");
+const User = require("../models/User.model");
 const authSchema = require("../lib/validationSchema");
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require("../lib/jwt");
 const redisClient = require("../lib/redisClient");

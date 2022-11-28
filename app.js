@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const { verifyAccessToken } = require("./lib/jwt");
-const AuthRoute = require("./Routes/Auth.route");
+const AuthRoute = require("./routes/Auth.route");
 const redisClient = require("./lib/redisClient");
 
 require("./lib/mongoClient");
