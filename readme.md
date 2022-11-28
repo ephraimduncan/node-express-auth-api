@@ -4,7 +4,7 @@ A Simple Authentication RESTful API using Node.js, Express, and Mongoose.
 
 By running a single command, you will get a production-ready Node.js app installed and fully configured on your machine. The app comes authentication using JWT, request validation
 
-## Manual Installation
+## Installation
 
 If you would still prefer to do the installation manually, follow these steps:
 
